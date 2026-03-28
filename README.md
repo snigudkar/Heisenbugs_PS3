@@ -1,7 +1,7 @@
 # EcoVision: NOAA Microplastic Intelligence System
 
 **Problem Statement:** Microplastic Detection & Risk Assessment  
-**Team Name:** [Heisenbugs]
+**Team Name:** Heisenbugs
 
 ---
 
