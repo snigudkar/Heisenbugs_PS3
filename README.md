@@ -21,11 +21,11 @@ Our solution provides researchers with **real-time, explainable insights** into:
 
 The platform is built on a modular **data-to-insight pipeline**:
 
-1. **User Interface**: Streamlit-based batch image uploader and geospatial configuration.  
-2. **AI Inference**: YOLOv8 engine for morphological classification.  
-3. **XAI Layer**: Custom heatmap generation for model interpretability.  
-4. **NOAA Data Engine**: Geospatial filtering and temporal baseline analysis.  
-5. **ERI Scoring**: Multi-factor index combining **density**, **proximity**, and **variance**.  
+1. **User Interface**: Streamlit-based batch image uploader and geospatial configuration  
+2. **AI Inference**: YOLOv8 engine for morphological classification  
+3. **XAI Layer**: Custom heatmap generation for model interpretability  
+4. **NOAA Data Engine**: Geospatial filtering and temporal baseline analysis  
+5. **ERI Scoring**: Multi-factor index combining **density**, **proximity**, and **variance**
 
 ---
 
@@ -37,15 +37,15 @@ We utilize the **National Centers for Environmental Information (NCEI) / NOAA da
 
 **Preprocessing Steps:**
 
-- **Column Standardization**: Clean headers for uniform mapping of Latitude/Longitude and measurement units.  
-- **Date Parsing**: Convert strings to datetime objects for temporal filtering (1970–2026).  
-- **Missing Value Handling**: Remove records lacking valid geospatial coordinates.  
-- **Temporal Filtering**: Dynamic windowing based on user-defined *Temporal Baseline*.  
+- **Column Standardization**: Clean headers for uniform mapping of Latitude/Longitude and measurement units  
+- **Date Parsing**: Convert strings to datetime objects for temporal filtering (1970–2026)  
+- **Missing Value Handling**: Remove records lacking valid geospatial coordinates  
+- **Temporal Filtering**: Dynamic windowing based on user-defined *Temporal Baseline*
 
 ### 2. Microplastic Microscopy Dataset
 
-- **Source**: Custom-curated dataset of microscopic imagery labeled via Roboflow.  
-- **Classes**: Fiber, Fragment, Film  
+- **Source**: Custom-curated dataset of microscopic imagery labeled via Roboflow  
+- **Classes**: Fiber, Fragment, Film
 
 ---
 
@@ -66,8 +66,8 @@ We utilized **YOLOv8 (Small)** for its optimal balance between **inference speed
 
 To ensure scientific validity, we implemented a custom **MicroplasticXAI** class:
 
-- Generates **Gaussian-blurred heatmaps** based on YOLO detection confidence.  
-- Confirms the model focuses on **polymeric textures** rather than slide artifacts.  
+- Generates **Gaussian-blurred heatmaps** based on YOLO detection confidence  
+- Confirms the model focuses on **polymeric textures** rather than slide artifacts  
 
 ---
 
@@ -76,37 +76,37 @@ To ensure scientific validity, we implemented a custom **MicroplasticXAI** class
 Our unique contribution is the **Ecological Synergy Protocol (ESP)**, which calculates risk beyond simple counting:
 
 \[
-\text{Risk} = \alpha (D_{batch} \cdot \mu_{setting}) + \beta \left(\frac{1}{dist_{hotspot}}\right) + \gamma \left(\frac{D_{batch}}{\bar{x}_{NOAA}}\right)
+\text{Risk} = \alpha (D_{\text{batch}} \cdot \mu_{\text{setting}}) + \beta \left(\frac{1}{dist_{\text{hotspot}}}\right) + \gamma \left(\frac{D_{\text{batch}}}{\bar{x}_{\text{NOAA}}}\right)
 \]
 
 ### Components
 
-| Factor               | Description                                        | Contribution |
-|----------------------|---------------------------------------------------|-------------|
-| **Density**          | Weighted count based on sample medium (Water, Beach, or Sediment) | 45%         |
-| **Proximity**        | Distance to historically recorded "High-Density" hotspots          | 35%         |
-| **Statistical Variance** | Deviation from the regional historical mean                     | 20%         |
+| Factor                  | Description                                        | Contribution |
+|-------------------------|---------------------------------------------------|-------------|
+| **Density**             | Weighted count based on sample medium (Water, Beach, or Sediment) | 45%         |
+| **Proximity**           | Distance to historically recorded "High-Density" hotspots          | 35%         |
+| **Statistical Variance**| Deviation from the regional historical mean                     | 20%         |
 
 ### Formulas
 
 1. **Proximity Score**  
 \[
-Proximity\ Score = \max(0, 35 - 1.5 \times distance)
+\text{Proximity Score} = \max(0, 35 - 1.5 \times \text{distance})
 \]
 
 2. **Density Score**  
 \[
-Density\ Score = \min(45, \frac{N_{detected}}{N_{ref}} \times 10 \times \mu_{setting})
+\text{Density Score} = \min\Big(45, \frac{N_{\text{detected}}}{N_{\text{ref}}} \times 10 \times \mu_{\text{setting}}\Big)
 \]
 
 3. **Variance Score**  
 \[
-Variance\ Score = \min(20, \frac{N_{detected}}{\bar{N}_{NOAA}+1} \times 5)
+\text{Variance Score} = \min\Big(20, \frac{N_{\text{detected}}}{\bar{N}_{\text{NOAA}} + 1} \times 5\Big)
 \]
 
 4. **Total Risk Score**  
 \[
-Total\ Risk = Proximity\ Score + Density\ Score + Variance\ Score
+\text{Total Risk} = \text{Proximity Score} + \text{Density Score} + \text{Variance Score}
 \]
 
 5. **Risk Category**
@@ -131,26 +131,26 @@ Suppose YOLO detects **3 particles**:
 | 3        | Film       | 50         |
 
 **Step 1: Proximity Score**  
-Station is 10° from nearest hotspot.  
+Station is 10° from nearest hotspot:  
 \[
-Proximity\ Score = \max(0, 35 - 1.5 \times 10) = 20
+\text{Proximity Score} = \max(0, 35 - 1.5 \times 10) = 20
 \]
 
 **Step 2: Density Score**  
-3 particles in **ocean** (multiplier = 1.2)  
+3 particles in **ocean** (multiplier = 1.2):  
 \[
-Density\ Score = \min(45, \frac{3}{15} \times 10 \times 1.2) = 2
+\text{Density Score} = \min\Big(45, \frac{3}{15} \times 10 \times 1.2\Big) = 2
 \]
 
 **Step 3: Variance Score**  
-Historical average = 2 particles  
+Historical average = 2 particles:  
 \[
-Variance\ Score = \min(20, \frac{3}{2+1} \times 5) = 5
+\text{Variance Score} = \min\Big(20, \frac{3}{2+1} \times 5\Big) = 5
 \]
 
 **Step 4: Total Risk Score**  
 \[
-Total\ Risk = 20 + 2 + 5 = 27
+\text{Total Risk} = 20 + 2 + 5 = 27
 \]
 
 **Step 5: Risk Category**  
@@ -168,13 +168,13 @@ Total\ Risk = 20 + 2 + 5 = 27
 
 ## ⚡ Key Takeaways
 
-1. Original problem: classify shape & size → hazard identification.  
-2. Extension: add **location**, **particle count**, and **variance** → holistic risk index.  
+1. Original problem: classify shape & size → hazard identification  
+2. Extension: add **location**, **particle count**, and **variance** → holistic risk index  
 3. Formula design:
-   - **Normalization** → scale counts to reference.  
-   - **Scaling** → human-readable points.  
-   - **Capping** → balanced contribution to total risk.  
-4. Outcome: automated **0–100 risk score** + visual dashboard for researchers.  
+   - **Normalization** → scale counts to reference  
+   - **Scaling** → human-readable points  
+   - **Capping** → balanced contribution to total risk  
+4. Outcome: automated **0–100 risk score** + visual dashboard for researchers  
 
 ---
 
